@@ -3,7 +3,7 @@
 //
 #include <string.h>
 #include <stdio.h>
-#include "ASTNode.c"
+#include "ASTNode.h"
 
 float strToFloat(char str[], int start, int end) {
     unsigned int length = end - start + 1;
