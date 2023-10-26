@@ -35,9 +35,8 @@ int findClosing(char str[], int openIndex, int end){
 }
 
 struct ASTNode* equationToAST(char equation[], int start, int end){
-    unsigned long length = strlen(equation);
 
-    if (equation[0] == '(' && equation[length-1] == ')') {
+    if (equation[start] == '(' && equation[end] == ')') {
         start++;
         end--;
     }
@@ -46,7 +45,7 @@ struct ASTNode* equationToAST(char equation[], int start, int end){
     enum Operators operator = NullOperator;
     int operatorIndex = -1;
 
-    while (head < length && equation[head] != '\0'){
+    while (head <= end && equation[head] != '\0'){
 
         switch (equation[head]) {
             case '+':
