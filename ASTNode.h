@@ -5,7 +5,8 @@
 #ifndef PSUEDO_ASTNODE_H
 #define PSUEDO_ASTNODE_H
 
-enum Operators {Addition, Subtraction, Multiplication, Division, NullOperator};
+enum Operators {NullOperator, Addition, Subtraction, Multiplication, Division};
+enum ASTDataType {Operator, Float};
 
 union ASTData {
     enum Operators operators;
@@ -13,6 +14,7 @@ union ASTData {
 };
 
 struct ASTNode {
+    enum ASTDataType type;
     union ASTData data;
     struct ASTNode* left;
     struct ASTNode* right;

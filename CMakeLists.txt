@@ -3,4 +3,4 @@ project(psuedo C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(psuedo main.c equationParser.c ASTNode.h equationParser.h)
+add_executable(psuedo main.c ASTNode.h equationParser.h equationParser.c ASTstack.h ASTstack.c)

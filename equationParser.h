@@ -2,11 +2,14 @@
 // Created by Harris on 26/10/2023.
 //
 
-#ifndef PSUEDO_EQUATIONPARSER_H
-#define PSUEDO_EQUATIONPARSER_H
+#ifndef PSEUDO_EQUATIONPARSER_H
+#define PSEUDO_EQUATIONPARSER_H
 
-float strToFloat(char str[], int start, int end);
-int findClosing(char str[], int openIndex, int end);
-struct ASTNode* equationToAST(char equation[], int start, int end);
+#include "ASTstack.h"
 
-#endif //PSUEDO_EQUATIONPARSER_H
+float strToFloat(const char str[], int start, int end);
+int findClosing(const char str[], int openIndex, int end);
+struct ASTNode* equationToAST(const char equation[], int start, int end);
+void solveAST(struct ASTstack* stack, struct ASTNode* tree);
+
+#endif // PSEUDO_EQUATIONPARSER_H

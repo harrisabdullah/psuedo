@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "ASTNode.h"
+#include "ASTstack.h"
 
 float strToFloat(char str[], int start, int end) {
     unsigned int length = end - start + 1;
@@ -19,7 +20,6 @@ float strToFloat(char str[], int start, int end) {
 
 int findClosing(char str[], int openIndex, int end){
     int depth = 0;
-
     for (int i = openIndex+1; i<=end; i++){
         if (str[i] == ')' && depth == 0){
             return i;
@@ -49,44 +49,89 @@ struct ASTNode* equationToAST(char equation[], int start, int end){
 
         switch (equation[head]) {
             case '+':
-                if (operator > Subtraction){
-                    operator = Addition;
-                    operatorIndex = head;
-                    break;
-                }
+                operator = Addition;
+                operatorIndex = head;
+                break;
 
             case '-':
-                if (operator > Subtraction){
-                    operator = Subtraction;
-                    operatorIndex = head;
-                    break;
-                }
+                operator = Subtraction;
+                operatorIndex = head;
+                break;
+
 
             case '/':
-                if (operator > Division){
+                if (operator != Addition && operator != Subtraction) {
                     operator = Division;
                     operatorIndex = head;
-                    break;
                 }
+                break;
 
             case '*':
-                if (operator > Division){
+                if (operator != Addition && operator != Subtraction) {
                     operator = Multiplication;
                     operatorIndex = head;
-                    break;
                 }
+                break;
 
             case '(':
-                head = findClosing(equation, head, end) + 1;
+                head = findClosing(equation, head, end);
         }
         head++;
     }
 
     if (operator == NullOperator){
-        struct ASTNode tree = {strToFloat(equation, start, end), NULL, NULL};
-        return &tree;
+        struct ASTNode* tree = (struct ASTNode*)malloc(sizeof(struct ASTNode));
+        tree->type = Float;
+        tree->data.number = strToFloat(equation, start, end);
+        tree->left = NULL;
+        tree->right = NULL;
+
+        return tree;
     }
 
-    struct ASTNode tree = {operator, equationToAST(equation, start, operatorIndex-1), equationToAST(equation, operatorIndex+1, end)};
-    return &tree;
+    struct ASTNode* tree = (struct ASTNode*)malloc(sizeof(struct ASTNode));
+    tree->data.operators = operator;
+    tree->type = Operator;
+    tree->left = equationToAST(equation, start, operatorIndex-1);
+    tree->right = equationToAST(equation, operatorIndex+1, end);
+    return tree;
+}
+
+void solveAST(struct ASTstack* stack, struct ASTNode* tree){
+
+    if (tree->type == Float){
+        ASTstackPush(stack, tree->data.number);
+        return;
+    }
+
+    solveAST(stack, tree->right);
+    solveAST(stack, tree->left);
+
+    float num1 = ASTstackPop(stack);
+    float num2 = ASTstackPop(stack);
+    float result;
+
+    switch (tree->data.operators) {
+        case Addition:
+            result = num1 + num2;
+            printf("%f + %f = %f\n", num1, num2, result);
+            break;
+        case Subtraction:
+            result = num1 - num2;
+            printf("%f - %f = %f\n", num1, num2, result);
+            break;
+        case Multiplication:
+            result = num1 * num2;
+            printf("%f * %f = %f\n", num1, num2, result);
+            break;
+        case Division:
+            result = num1 / num2;
+            printf("%f / %f = %f\n", num1, num2, result);
+            break;
+        case NullOperator:
+            result = 0;
+            break;
+    }
+
+    ASTstackPush(stack, result);
 }
