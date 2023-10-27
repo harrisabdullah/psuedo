@@ -3,6 +3,7 @@
 //
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 #include "ASTNode.h"
 #include "ASTstack.h"
 
@@ -42,6 +43,7 @@ struct ASTNode* equationToAST(char equation[], int start, int end){
     }
 
     int head = start;
+    int operator_length = 1;
     enum Operators operator = NullOperator;
     int operatorIndex = -1;
 
@@ -63,12 +65,31 @@ struct ASTNode* equationToAST(char equation[], int start, int end){
                 if (operator != Addition && operator != Subtraction) {
                     operator = Division;
                     operatorIndex = head;
+                    operator_length++;
                 }
                 break;
 
             case '*':
+
+                if (head + 1 < end){
+                    if (equation[head+1] == '*'){
+                        operator = Exponentiation;
+                        operatorIndex = head;
+                        operator_length++;
+                        head++;
+                        break;
+                    }
+                }
+
                 if (operator != Addition && operator != Subtraction) {
                     operator = Multiplication;
+                    operatorIndex = head;
+                }
+                break;
+
+            case '^':
+                if (operator == NullOperator) {
+                    operator = Exponentiation;
                     operatorIndex = head;
                 }
                 break;
@@ -85,15 +106,14 @@ struct ASTNode* equationToAST(char equation[], int start, int end){
         tree->data.number = strToFloat(equation, start, end);
         tree->left = NULL;
         tree->right = NULL;
-
         return tree;
     }
 
     struct ASTNode* tree = (struct ASTNode*)malloc(sizeof(struct ASTNode));
-    tree->data.operators = operator;
     tree->type = Operator;
+    tree->data.operators = operator;
     tree->left = equationToAST(equation, start, operatorIndex-1);
-    tree->right = equationToAST(equation, operatorIndex+1, end);
+    tree->right = equationToAST(equation, operatorIndex+operator_length, end);
     return tree;
 }
 
@@ -128,6 +148,12 @@ void solveAST(struct ASTstack* stack, struct ASTNode* tree){
             result = num1 / num2;
             printf("%f / %f = %f\n", num1, num2, result);
             break;
+
+        case Exponentiation:
+            result = pow(num1, num2);
+            printf("%f^%f = %f\n", num1, num2, result);
+            break;
+
         case NullOperator:
             result = 0;
             break;
