@@ -36,7 +36,7 @@ int findClosing(char str[], int openIndex, int end){
 
 struct ASTNode* equationToAST(char equation[], int start, int end){
 
-    if (equation[start] == '(' && equation[end] == ')') {
+    if (equation[start] == '(' && findClosing(equation, start, end) == end) {
         start++;
         end--;
     }
