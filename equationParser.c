@@ -72,7 +72,7 @@ struct ASTNode* equationToAST(char equation[], int start, int end){
             case '*':
 
                 if (head + 1 < end){
-                    if (equation[head+1] == '*'){
+                    if (equation[head+1] == '*' && operator == NullOperator){
                         operator = Exponentiation;
                         operatorIndex = head;
                         operator_length++;
